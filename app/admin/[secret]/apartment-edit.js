@@ -29,32 +29,31 @@ export default function ApartmentEdit({ apartment }) {
   };
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <span className="text-xs text-zinc-500">Студия</span>
-      <input
-        type="number"
-        min="1"
-        value={num}
-        onChange={(e) => setNum(e.target.value)}
-        className="w-16 px-2 py-1 text-sm border border-zinc-300 rounded text-zinc-900 bg-white"
-      />
+    <div className="grid grid-cols-[auto_1fr_auto] gap-2 items-center">
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs text-zinc-500">№</span>
+        <input
+          type="number"
+          min="1"
+          value={num}
+          onChange={(e) => setNum(e.target.value)}
+          className="w-14 px-2 py-1.5 text-sm border border-zinc-300 rounded-md text-zinc-900 bg-white"
+        />
+      </div>
       <input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Имя квартиранта"
-        className="px-2 py-1 text-sm border border-zinc-300 rounded text-zinc-900 bg-white"
+        placeholder="Имя"
+        className="w-full px-2 py-1.5 text-sm border border-zinc-300 rounded-md text-zinc-900 bg-white"
       />
       <button
         onClick={handleSave}
         disabled={pending}
-        className="px-3 py-1 text-xs rounded bg-zinc-200 hover:bg-zinc-300 text-zinc-800 disabled:opacity-50"
+        className="px-3 py-1.5 text-xs rounded-md bg-zinc-200 hover:bg-zinc-300 text-zinc-800 disabled:opacity-50"
       >
-        {pending ? '...' : status === 'ok' ? '✓' : 'Сохранить'}
+        {pending ? '…' : status === 'ok' ? '✓' : status === 'err' ? 'Ошибка' : 'Сохр'}
       </button>
-      {status === 'err' && (
-        <span className="text-xs text-red-600">Ошибка</span>
-      )}
     </div>
   );
 }

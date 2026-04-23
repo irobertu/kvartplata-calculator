@@ -27,19 +27,19 @@ function formatDate(iso) {
 
 function MeterRow({ title, unit, tariff, prev, curr, onCurrChange, prevName }) {
   return (
-    <div className="border border-zinc-200 rounded-xl p-4">
-      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+    <div className="border border-zinc-200 rounded-xl p-3 sm:p-4">
+      <div className="flex items-center justify-between mb-3 flex-wrap gap-1">
         <span className="font-medium text-zinc-900">{title}</span>
         <span className="text-xs text-zinc-500">
           Тариф: {tariff} ₽/{unit}
         </span>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
         <div>
           <label className="block text-xs font-medium text-zinc-600 mb-1">
             Было (прошлый раз)
           </label>
-          <div className="w-full px-3 py-2 border border-zinc-200 bg-zinc-50 rounded-lg text-zinc-700 tabular-nums">
+          <div className="w-full px-3 py-2.5 border border-zinc-200 bg-zinc-50 rounded-lg text-zinc-700 tabular-nums text-base">
             {prev ?? '—'}
           </div>
         </div>
@@ -55,7 +55,7 @@ function MeterRow({ title, unit, tariff, prev, curr, onCurrChange, prevName }) {
             value={curr}
             onChange={(e) => onCurrChange(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-zinc-900 bg-white"
+            className="w-full px-3 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-zinc-900 bg-white text-base"
           />
         </div>
       </div>
@@ -118,23 +118,23 @@ export default function ApartmentForm({ apartment, lastReading }) {
   const title = apartment.tenant_name || apartment.name || 'Квартирант';
 
   return (
-    <div className="min-h-screen bg-zinc-50 py-10 px-4">
-      <main className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm p-6 sm:p-8">
+    <div className="min-h-screen bg-zinc-50 py-6 sm:py-10 px-3 sm:px-4">
+      <main className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm p-4 sm:p-8">
         {subheader && (
           <div className="text-xs uppercase tracking-wide text-zinc-500 mb-1">
             {subheader}
           </div>
         )}
-        <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-900 mb-1">
+        <h1 className="text-xl sm:text-3xl font-semibold text-zinc-900 mb-1">
           {title}
         </h1>
-        <p className="text-zinc-500 mb-6 text-sm">
+        <p className="text-zinc-500 mb-5 sm:mb-6 text-sm">
           {lastReading
             ? `Прошлые показания от ${formatDate(lastReading.created_at)}. Введите текущие — итог посчитается сам.`
             : 'Прошлых показаний ещё нет. Просто введите текущие — в следующий раз они подставятся как «Было».'}
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           <MeterRow
             title="Электроэнергия"
             unit="кВт·ч"
@@ -163,7 +163,7 @@ export default function ApartmentForm({ apartment, lastReading }) {
             prevName="hot_water"
           />
 
-          <div className="border border-zinc-200 rounded-xl p-4">
+          <div className="border border-zinc-200 rounded-xl p-3 sm:p-4">
             <div className="font-medium text-zinc-900">Водоотведение</div>
             <div className="text-xs text-zinc-500 mt-0.5">
               Объём = ХВ + ГВ = {sewage.toLocaleString('ru-RU')} м³ ·
@@ -171,16 +171,16 @@ export default function ApartmentForm({ apartment, lastReading }) {
             </div>
           </div>
 
-          <div className="mt-6 border-t border-zinc-200 pt-6 space-y-2 text-sm">
+          <div className="mt-5 sm:mt-6 border-t border-zinc-200 pt-5 sm:pt-6 space-y-2 text-sm">
             <Line name={`Электроэнергия: ${el} × ${elT}`} value={elSum} />
             <Line name={`Холодная вода: ${cw} × ${cwT}`} value={cwSum} />
             <Line name={`Горячая вода: ${hw} × ${hwT}`} value={hwSum} />
             <Line name={`Водоотведение: ${sewage} × ${seT}`} value={sewageSum} />
           </div>
 
-          <div className="mt-4 bg-blue-50 rounded-xl p-4 flex items-center justify-between">
-            <span className="text-zinc-700 font-medium">Итого к оплате:</span>
-            <span className="text-2xl font-semibold text-blue-700">
+          <div className="mt-4 bg-blue-50 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-3">
+            <span className="text-zinc-700 font-medium">Итого:</span>
+            <span className="text-xl sm:text-2xl font-semibold text-blue-700 tabular-nums whitespace-nowrap">
               {formatMoney(total)} ₽
             </span>
           </div>
@@ -212,9 +212,9 @@ export default function ApartmentForm({ apartment, lastReading }) {
 
 function Line({ name, value }) {
   return (
-    <div className="flex justify-between text-zinc-700">
-      <span>{name}</span>
-      <span className="tabular-nums">{formatMoney(value)} ₽</span>
+    <div className="flex justify-between gap-3 text-zinc-700">
+      <span className="break-words">{name}</span>
+      <span className="tabular-nums whitespace-nowrap">{formatMoney(value)} ₽</span>
     </div>
   );
 }
