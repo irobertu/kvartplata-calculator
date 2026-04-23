@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { submitReading } from '@/lib/actions';
+import { getTheme } from '@/lib/theme';
 
 function formatMoney(value) {
   return value.toLocaleString('ru-RU', {
@@ -25,9 +26,9 @@ function formatDate(iso) {
   });
 }
 
-function MeterRow({ title, unit, tariff, prev, curr, onCurrChange, prevName }) {
+function MeterRow({ title, unit, tariff, prev, curr, onCurrChange, prevName, theme }) {
   return (
-    <div className="border border-zinc-200 rounded-xl p-3 sm:p-4">
+    <div className={`border ${theme.cardBorder} rounded-xl p-3 sm:p-4`}>
       <div className="flex items-center justify-between mb-3 flex-wrap gap-1">
         <span className="font-medium text-zinc-900">{title}</span>
         <span className="text-xs text-zinc-500">
@@ -55,7 +56,7 @@ function MeterRow({ title, unit, tariff, prev, curr, onCurrChange, prevName }) {
             value={curr}
             onChange={(e) => onCurrChange(e.target.value)}
             required
-            className="w-full px-3 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-zinc-900 bg-white text-base"
+            className={`w-full px-3 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 ${theme.focusRing} text-zinc-900 bg-white text-base`}
           />
         </div>
       </div>
@@ -69,6 +70,7 @@ export default function ApartmentForm({ apartment, lastReading }) {
   const [hwCurr, setHwCurr] = useState('');
   const [status, setStatus] = useState(null);
   const [pending, startTransition] = useTransition();
+  const theme = getTheme(apartment.complex);
 
   const elPrev = lastReading?.electricity ?? null;
   const cwPrev = lastReading?.cold_water ?? null;
@@ -119,9 +121,10 @@ export default function ApartmentForm({ apartment, lastReading }) {
 
   return (
     <div className="min-h-screen bg-zinc-50 py-6 sm:py-10 px-3 sm:px-4">
-      <main className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm p-4 sm:p-8">
+      <main className={`relative max-w-2xl mx-auto bg-white rounded-2xl shadow-sm p-4 sm:p-8 overflow-hidden`}>
+        <div className={`absolute top-0 left-0 right-0 h-1.5 ${theme.cardAccent}`} />
         {subheader && (
-          <div className="text-xs uppercase tracking-wide text-zinc-500 mb-1">
+          <div className={`text-xs uppercase tracking-wide ${theme.headingText} mb-1 font-medium`}>
             {subheader}
           </div>
         )}
@@ -143,6 +146,7 @@ export default function ApartmentForm({ apartment, lastReading }) {
             curr={elCurr}
             onCurrChange={setElCurr}
             prevName="electricity"
+            theme={theme}
           />
           <MeterRow
             title="Холодная вода"
@@ -152,6 +156,7 @@ export default function ApartmentForm({ apartment, lastReading }) {
             curr={cwCurr}
             onCurrChange={setCwCurr}
             prevName="cold_water"
+            theme={theme}
           />
           <MeterRow
             title="Горячая вода"
@@ -161,9 +166,10 @@ export default function ApartmentForm({ apartment, lastReading }) {
             curr={hwCurr}
             onCurrChange={setHwCurr}
             prevName="hot_water"
+            theme={theme}
           />
 
-          <div className="border border-zinc-200 rounded-xl p-3 sm:p-4">
+          <div className={`border ${theme.cardBorder} rounded-xl p-3 sm:p-4`}>
             <div className="font-medium text-zinc-900">Водоотведение</div>
             <div className="text-xs text-zinc-500 mt-0.5">
               Объём = ХВ + ГВ = {sewage.toLocaleString('ru-RU')} м³ ·
@@ -178,9 +184,9 @@ export default function ApartmentForm({ apartment, lastReading }) {
             <Line name={`Водоотведение: ${sewage} × ${seT}`} value={sewageSum} />
           </div>
 
-          <div className="mt-4 bg-blue-50 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-3">
+          <div className={`mt-4 ${theme.payBg} rounded-xl p-3 sm:p-4 flex items-center justify-between gap-3`}>
             <span className="text-zinc-700 font-medium">Итого:</span>
-            <span className="text-xl sm:text-2xl font-semibold text-blue-700 tabular-nums whitespace-nowrap">
+            <span className={`text-xl sm:text-2xl font-semibold ${theme.payText} tabular-nums whitespace-nowrap`}>
               {formatMoney(total)} ₽
             </span>
           </div>
@@ -200,7 +206,7 @@ export default function ApartmentForm({ apartment, lastReading }) {
           <button
             type="submit"
             disabled={pending}
-            className="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition disabled:opacity-50"
+            className={`w-full py-3 rounded-lg ${theme.button} text-white font-medium transition disabled:opacity-50`}
           >
             {pending ? 'Сохраняю…' : 'Отправить показания'}
           </button>

@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from 'react';
 import { updateTariffs } from '@/lib/actions';
+import { getTheme } from '@/lib/theme';
 
-function Field({ label, name, value, onChange, unit }) {
+function Field({ label, name, value, onChange, unit, focusRing }) {
   return (
     <div>
       <label className="block text-xs font-medium text-zinc-600 mb-1">
@@ -17,7 +18,7 @@ function Field({ label, name, value, onChange, unit }) {
           step="0.01"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-zinc-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full px-3 py-2 border border-zinc-300 rounded-lg text-zinc-900 bg-white focus:outline-none focus:ring-2 ${focusRing}`}
         />
         <span className="text-xs text-zinc-500 whitespace-nowrap">{unit}</span>
       </div>
@@ -32,6 +33,7 @@ export default function TariffForm({ complex, initial }) {
   const [se, setSe] = useState(String(initial.sewage ?? ''));
   const [status, setStatus] = useState(null);
   const [pending, startTransition] = useTransition();
+  const theme = getTheme(complex);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -55,16 +57,16 @@ export default function TariffForm({ complex, initial }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-zinc-50 border border-zinc-200 rounded-xl p-4"
+      className={`${theme.formBg} border ${theme.formBorder} rounded-xl p-4`}
     >
       <div className="font-medium text-zinc-900 mb-3">
         Тарифы — ЖК «{complex}»
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Field label="Электроэнергия" name="electricity" value={el} onChange={setEl} unit="₽/кВт·ч" />
-        <Field label="Холодная вода" name="cold_water" value={cw} onChange={setCw} unit="₽/м³" />
-        <Field label="Горячая вода" name="hot_water" value={hw} onChange={setHw} unit="₽/м³" />
-        <Field label="Водоотведение" name="sewage" value={se} onChange={setSe} unit="₽/м³" />
+        <Field label="Электроэнергия" name="electricity" value={el} onChange={setEl} unit="₽/кВт·ч" focusRing={theme.focusRing} />
+        <Field label="Холодная вода" name="cold_water" value={cw} onChange={setCw} unit="₽/м³" focusRing={theme.focusRing} />
+        <Field label="Горячая вода" name="hot_water" value={hw} onChange={setHw} unit="₽/м³" focusRing={theme.focusRing} />
+        <Field label="Водоотведение" name="sewage" value={se} onChange={setSe} unit="₽/м³" focusRing={theme.focusRing} />
       </div>
 
       {status && (
@@ -82,7 +84,7 @@ export default function TariffForm({ complex, initial }) {
       <button
         type="submit"
         disabled={pending}
-        className="mt-3 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+        className={`mt-3 px-4 py-2 rounded-lg ${theme.button} text-white text-sm font-medium disabled:opacity-50`}
       >
         {pending ? 'Сохраняю…' : 'Сохранить тарифы'}
       </button>

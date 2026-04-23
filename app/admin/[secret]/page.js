@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase';
+import { getTheme } from '@/lib/theme';
 import TariffForm from './tariff-form';
 import ApartmentEdit from './apartment-edit';
 
@@ -35,7 +36,7 @@ function calcBreakdown(apartment, curr, prev) {
   return { el, cw, hw, sewage, total };
 }
 
-function ReadingRow({ label, prev, diff, unit }) {
+function ReadingRow({ label, prev, diff, unit, diffText }) {
   return (
     <div className="flex justify-between items-baseline text-sm py-1.5 border-b border-zinc-100 last:border-b-0">
       <span className="text-zinc-600">{label}</span>
@@ -44,7 +45,7 @@ function ReadingRow({ label, prev, diff, unit }) {
           <>
             {prev}
             {diff != null && (
-              <span className="text-emerald-600 ml-1.5">+{diff}</span>
+              <span className={`${diffText} ml-1.5`}>+{diff}</span>
             )}
             {unit && <span className="text-zinc-400 text-xs ml-1">{unit}</span>}
           </>
@@ -56,12 +57,14 @@ function ReadingRow({ label, prev, diff, unit }) {
   );
 }
 
-function ApartmentCard({ apartment, last, prev }) {
+function ApartmentCard({ apartment, last, prev, theme }) {
   const b = calcBreakdown(apartment, last, prev);
   const date = formatDate(last?.created_at);
 
   return (
-    <div className="border border-zinc-200 rounded-xl p-4 bg-white">
+    <div className={`relative border ${theme.cardBorder} rounded-xl p-4 bg-white overflow-hidden`}>
+      <div className={`absolute top-0 left-0 right-0 h-1 ${theme.cardAccent}`} />
+
       <ApartmentEdit apartment={apartment} />
 
       <div className="text-xs text-zinc-500 mt-3">
@@ -74,30 +77,34 @@ function ApartmentCard({ apartment, last, prev }) {
           prev={last?.electricity}
           diff={b?.el}
           unit="кВт·ч"
+          diffText={theme.diffText}
         />
         <ReadingRow
           label="Холодная вода"
           prev={last?.cold_water}
           diff={b?.cw}
           unit="м³"
+          diffText={theme.diffText}
         />
         <ReadingRow
           label="Горячая вода"
           prev={last?.hot_water}
           diff={b?.hw}
           unit="м³"
+          diffText={theme.diffText}
         />
         <ReadingRow
           label="Водоотведение"
           prev={b ? b.sewage : null}
           diff={null}
           unit="м³"
+          diffText={theme.diffText}
         />
       </div>
 
-      <div className="mt-3 bg-blue-50 rounded-lg p-3 flex items-baseline justify-between">
+      <div className={`mt-3 ${theme.payBg} rounded-lg p-3 flex items-baseline justify-between`}>
         <span className="text-sm text-zinc-700">К оплате:</span>
-        <span className="text-lg font-semibold text-blue-700 tabular-nums">
+        <span className={`text-lg font-semibold ${theme.payText} tabular-nums`}>
           {b ? `${formatMoney(b.total)} ₽` : '—'}
         </span>
       </div>
@@ -106,7 +113,7 @@ function ApartmentCard({ apartment, last, prev }) {
         href={`/apt/${apartment.id}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-3 block text-center text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 py-2 rounded-lg transition"
+        className={`mt-3 block text-center text-sm ${theme.payText} hover:opacity-80 ${theme.payBg} py-2 rounded-lg transition`}
       >
         Открыть страницу квартиранта ↗
       </a>
@@ -166,6 +173,7 @@ export default async function AdminPage({ params }) {
 
         <div className="space-y-8 sm:space-y-10">
           {[...groups.entries()].map(([complex, apts]) => {
+            const theme = getTheme(complex);
             const first = apts[0];
             const initial = {
               electricity: first.tariff_electricity,
@@ -175,7 +183,7 @@ export default async function AdminPage({ params }) {
             };
             return (
               <section key={complex}>
-                <h2 className="text-lg sm:text-xl font-semibold text-zinc-900 mb-3">
+                <h2 className={`text-lg sm:text-xl font-semibold ${theme.headingText} mb-3`}>
                   ЖК «{complex}»
                 </h2>
                 <div className="mb-4">
@@ -188,6 +196,7 @@ export default async function AdminPage({ params }) {
                       apartment={apt}
                       last={lastByApt[apt.id]}
                       prev={prevByApt[apt.id]}
+                      theme={theme}
                     />
                   ))}
                 </div>
